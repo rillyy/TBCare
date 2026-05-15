@@ -77,14 +77,6 @@ PASIEN = [
      "diagnosa":"TBC Paru (Baru)","dokter":"dr. Rina Sari","alamat":"Jl. Sudirman No.22"},
 ]
 
-STOK = [
-    {"nama":"Rifampisin 150mg",  "stok":2400,"maks":3000,"sat":"tablet"},
-    {"nama":"Isoniazid 300mg",   "stok":1860,"maks":3000,"sat":"tablet"},
-    {"nama":"Pirazinamid 500mg", "stok":980, "maks":3000,"sat":"tablet"},
-    {"nama":"Etambutol 250mg",   "stok":320, "maks":3000,"sat":"tablet"},
-    {"nama":"FDC 4-in-1 (HRZE)","stok":4200,"maks":4500,"sat":"tablet"},
-    {"nama":"Streptomisin inj.", "stok":150, "maks":400, "sat":"vial"},
-]
 
 LAB = [
     {"id":"TBC-2024-001","nama":"Siti Aminah",   "jenis":"BTA Sputum",    "hasil":"BTA +3",                    "tgl":"02/04/2026","status":"Kritis"},
@@ -243,7 +235,6 @@ class TBCareApp(ctk.CTk):
             ("KLINIS", [
                 ("⚠️","Peringatan Dini", 6,     "peringatan"),
                 ("🧪","Lab & Diagnostik",None,  "lab"),
-                ("📦","Stok Obat",       None,  "stok"),
             ]),
             ("LAPORAN", [
                 ("📋","Laporan Bulanan", None,  "laporan"),
@@ -314,7 +305,7 @@ class TBCareApp(ctk.CTk):
         titles = {"dashboard":"Dashboard","pasien":"Data Pasien",
                   "kepatuhan":"Kepatuhan Obat","jadwal":"Jadwal Kontrol",
                   "antrian":"Antrian Pasien","peringatan":"Peringatan Dini",
-                  "lab":"Lab & Diagnostik","stok":"Stok Obat",
+                  "lab":"Lab & Diagnostik",
                   "laporan":"Laporan Bulanan","edukasi":"Edukasi Pasien"}
         self._tb_title.configure(text=titles.get(key, key))
 
@@ -328,7 +319,6 @@ class TBCareApp(ctk.CTk):
          "antrian"  : self._pg_antrian,
          "peringatan":self._pg_peringatan,
          "lab"      : self._pg_lab,
-         "stok"     : self._pg_stok,
          "laporan"  : self._pg_laporan,
          "edukasi"  : self._pg_edukasi,
         }.get(key, lambda: None)()
@@ -864,40 +854,6 @@ class TBCareApp(ctk.CTk):
         tree.pack(fill="both", expand=True, padx=2, pady=2)
 
     # ═════════════════════════════════════════════════════════════════════════
-    # STOK OBAT
-    # ═════════════════════════════════════════════════════════════════════════
-    def _pg_stok(self):
-        p = self._scroll
-        hdr = ctk.CTkFrame(p, fg_color="transparent")
-        hdr.pack(fill="x", padx=20, pady=(18,10))
-        ctk.CTkLabel(hdr, text="Manajemen Stok Obat TBC",
-                     font=F_TITLE, text_color=C["text_dark"]).pack(side="left")
-        ctk.CTkButton(hdr, text="+ Update Stok", fg_color=C["dark_green"],
-                      hover_color=C["evergreen"], font=F_BODY,
-                      command=lambda: messagebox.showinfo("Stok","Form update stok")).pack(side="right")
-        for ob in STOK:
-            pct = ob["stok"] / ob["maks"]
-            clr = C["sput_grn"] if pct>0.6 else (C["sput_yel"] if pct>0.25 else C["blood"])
-            card = ctk.CTkFrame(p, fg_color=C["card"], corner_radius=12,
-                                border_width=1, border_color=C["border"])
-            card.pack(fill="x", padx=20, pady=5)
-            rw = ctk.CTkFrame(card, fg_color="transparent")
-            rw.pack(fill="x", padx=14, pady=(10,4))
-            ctk.CTkLabel(rw, text=ob["nama"], font=("Helvetica",12,"bold"),
-                         text_color=C["text_dark"], width=200).pack(side="left")
-            ctk.CTkLabel(rw, text=f"{ob['stok']:,} / {ob['maks']:,} {ob['sat']}",
-                         font=F_BODY, text_color=C["text_mid"]).pack(side="left", padx=20)
-            if pct < 0.25:
-                ctk.CTkLabel(rw, text="  Stok Menipis — Segera Pesan  ",
-                             font=F_XS, text_color=C["blood"],
-                             fg_color="#f5e6e5", corner_radius=6).pack(side="right", padx=10)
-            ctk.CTkLabel(rw, text=f"{int(pct*100)}%", font=("Helvetica",12,"bold"),
-                         text_color=clr).pack(side="right")
-            bb = ctk.CTkFrame(card, fg_color="#e8e8e0", height=10, corner_radius=5)
-            bb.pack(fill="x", padx=14, pady=(0,10))
-            ctk.CTkFrame(bb, fg_color=clr, height=10, corner_radius=5).place(
-                x=0, y=0, relheight=1, relwidth=pct)
-
     # ═════════════════════════════════════════════════════════════════════════
     # LAPORAN BULANAN
     # ═════════════════════════════════════════════════════════════════════════
